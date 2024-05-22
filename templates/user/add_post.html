@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{url_for('static',filename='post.css')}}" />
+  <style>
+    #image-preview {
+      max-width: 300px;
+      max-height: 300px;
+      margin-top: 20px;
+    }
+  </style>
+  <title>Add Post</title>
+</head>
+
+<body>
+  <div class="container">
+    <p style="text-transform: uppercase;">{{user.name}}'s post</p>
+    <form action="{{url_for('user_api.post_image', tenant=schema)}}" method="post" class="post-form" id="uploadForm"
+      enctype="multipart/form-data">
+      <input type="file" name="post_addr" id="post_addr" required>
+      <label for="caption">Caption:</label>
+      <input type="text" id="caption" name="caption" required>
+      <label for="addmention">Mention:</label>
+      <input type="text" name="mention" id="mention" required>
+      <button type="submit" value="Post">Post</button>
+    </form>
+  </div>
+
+</body>
+
+</html>
