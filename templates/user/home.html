@@ -12,7 +12,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
 </head>
 
@@ -25,46 +27,12 @@
             {% for i in user %}
             <div class="user">
                 {% if i.dp_addr %}
-                <img src="{{ url_for('static', filename=i.dp_addr) }}" alt="" srcset="" class="btn0"
-                    data-target="#myModal{{ i.id }}">
+                <img src="{{ url_for('static', filename=i.dp_addr) }}" alt="" srcset="">
                 {% endif %}
                 <br>
                 {{ i.username }}
             </div>
-            <div id="myModal{{ i.id }}" class="modal0" style="background-color: rgba(0, 0, 0, 0.288);">
-                <div class="modal-content model_background" style="background-color: white;">
-                    <span class="close0" onclick="closeModal('{{ i.id }}')">&times;</span>
-                    <div class="meet_you_details">
-                        {% if i.dp_addr %}
-                        <img src="{{ url_for('static', filename=i.dp_addr) }}" alt="" srcset="">
-                        {% endif %}
-                        {{ i.username }}
-                        <br>
-                        <div class="details_imp">
-                            <div>
-                                {{ i.post }}
-                                <br>
-                                Post
-                            </div>
-                            <div>
-                                {{ i.following }}
-                                <br>
-                                Following
-                            </div>
-                            <div>
-                                {{ i.followers }}
-                                <br>
-                                Followers
-                            </div>
-                        </div>
-                        <div class="buttons_model row container" style="margin: 0 20%;background-color: transparent;">
-                            <button class="submit col-3 text-bg-primary border-0 m-3">Follow +</button>
-                            <button class="submit col-3 text-bg-warning border-0 m-3"
-                                style="height: 35px;">Message</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             {% endfor %}
         </div>
     </div>
@@ -75,10 +43,10 @@
             {% for i in display_posts %}
             {% if i.post_addr %}
             <div class="post">
-                <p class="pt-2" style="text-align: left;padding-left: 10px;"><img
+                <a href="{{url_for('user_api.profile',tenant=i.author.username)}}" style="text-decoration: none;color: black;"><p class="pt-2" style="text-align: left;padding-left: 10px;"><img
                         src="{{url_for('static',filename=i.author.dp_addr)}}" alt="" srcset="" style="    width: 43px;
                     height: 43px;margin-right: 7px;border: 1px solid black;border-radius: 50%;"><span class="pt-3">
-                        {{i.author.username}} </span></p>
+                         {{i.author.username}} </span></p></a>
 
                 <img src="{{url_for('static',filename=i.post_addr)}}" alt="" srcset="">
                 <p class="mt-3" style="font-size: 15px;text-align: left;padding-left: 10px;margin-bottom: 0;">
@@ -86,13 +54,13 @@
                 <div class="like-comment" style="height: 40px;">
                     <h5 class="mt-1" style="margin-left: 10px;">{{i.post_like}} Likes..</h5>
                     <div style="display: flex;text-align: center;">
-                        {% if like_status[i.post_id]  %}
-                        <form action="{{url_for('user_api.dislike_post',post_id=i.post_id)}}" , method="post">
+                        {% if like_status[i.post_id] %}
+                        <form action="{{url_for('post_api.dislike_post',post_id=i.post_id)}}" , method="post">
                             <button class="like">
                                 <i class="fa-regular fa-heart likebtn2" style="color: red;"></i>
                         </form>
                         {% else %}
-                        <form action="{{url_for('user_api.like_post',post_id=i.post_id)}}" , method="post">
+                        <form action="{{url_for('post_api.like_post',post_id=i.post_id)}}" , method="post">
                             <button class="like">
                                 <i class="fa-regular fa-heart likebtn1"></i>
                             </button>
@@ -106,22 +74,45 @@
                     </div>
                     <div>
                         {%if i.author.name == current_user.name %}
-                        <form action="{{url_for('user_api.delete_post',post_id=i.post_id)}}" , method="post">
-                            <button>
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </form>
-                        {% endif %}
+                        <a href="#myModal" class="trigger-btn" data-toggle="modal" style="text-decoration: none;color: black;font-size: 19px;margin: 15px;">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+
                     </div>
+                    <div id="myModal" class="modal fade">
+                        <div class="modal-dialog modal-confirm">
+                            <div class="modal-content">
+                                <div class="modal-header flex-column">
+                                    <div class="icon-box">
+                                        <i class="material-icons fa-solid fa-x"></i>
+                                    </div>
+                                    <h4 class="modal-title w-100">Are you sure?</h4>
+                                    <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Do you really want to delete these Post? This process cannot be undone.</p>
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <form action="{{url_for('post_api.delete_post',post_id=i.post_id)}}" ,
+                                        method="post">
+                                        <button class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
             {% endfor %}
         </div>
     </div>
-    
+
     <script src="{{url_for('static',filename='model.js')}}"> </script>
-    
+
 </body>
 {% endblock %}
 

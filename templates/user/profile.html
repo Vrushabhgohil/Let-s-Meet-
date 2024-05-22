@@ -48,7 +48,17 @@
       </div>
     </div>
     <br>
-
+    <div class="buttons_model row" style="margin: 0 2%;width: 100%;text-align: center;background-color: transparent;justify-content: space-evenly;">
+      <div  class="col-3">
+        <form action="{{url_for('user_api.follow',tenant=user.name)}}">
+          <button class="submit text-bg-primary border-0 m-3">Follow +</button></form>
+      </div>
+      <div  class="col-3">
+        <form action="#"><button class="submit text-bg-warning border-0 m-3">Message</button></form>
+      </div>
+      
+    </form>
+  </div>  
 
     <!-- all the post of the current user -->
     

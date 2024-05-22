@@ -20,6 +20,8 @@ class User(UserMixin, db.Model):
     is_active = Column(Boolean, default=True)
 
     posts = db.relationship('Post', backref='author', lazy=True)
+    followers = db.relationship('Followers', backref='author', lazy=True)
+    following = db.relationship('Following', backref='author', lazy=True)
 
 class Post(db.Model):
     __tablename__ = 'Post'
@@ -36,6 +38,25 @@ class Post(db.Model):
 
     user = db.relationship('User',primaryjoin=(User.id == post_by))
 
+class Followers(db.Model):
+    __tablename__ = 'Followers'
+    __table_args__ = {'schema': 'myschema'}
+    followers_id = Column(String(100), primary_key=True)
+    followers_name = Column(String(250), nullable=False)
+    followers_user_id = Column(String(50),ForeignKey('myschema.User.id'), unique=True)
+    followers_date = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship('User',primaryjoin=(User.id == followers_user_id))
+
+class Following(db.Model):
+    __tablename__ = 'Following'
+    __table_args__ = {'schema': 'myschema'}
+    following_id = Column(String(100), primary_key=True)
+    following_name = Column(String(250), nullable=False)
+    following_user_id = Column(String(50),ForeignKey('myschema.User.id'), unique=True)
+    following_date = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship('User',primaryjoin=(User.id == following_user_id))
 
 class Post_like(db.Model):
     __tablename__ = 'Post_like'
@@ -66,6 +87,7 @@ class Notification(db.Model):
     __tablename__ = 'Notification'
     notification_id = Column(String(100), primary_key=True)
     notification_details = Column(String(250), nullable=False)
-    notification_type = Column(String(50), unique=False)
+    notification_to = Column(String(50),nullable=False)
+    notification_from = Column(String(50),nullable=False)
     notification_date = Column(DateTime, default=datetime.utcnow, nullable=False)
-    notification_status = Column(String(30),nullable=True)
+    notification_status = Column(Boolean,default=True)

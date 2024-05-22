@@ -2,15 +2,10 @@ from datetime import datetime
 import os
 import uuid
 from werkzeug.utils import secure_filename
-from flask import redirect, render_template, request, url_for
-import jwt
+from flask import redirect, request, url_for
 from common.database import db
-from common.model import Notification, Post, Post_comment, Post_like, User
-from sqlalchemy import desc,text
-
-def all_user():
-    users = User.query.all()
-    return users
+from common.model import Post, Post_comment, Post_like
+from sqlalchemy import desc
 
 def all_post():
     posts = Post.query.order_by(desc(Post.post_date)).all()
@@ -23,50 +18,6 @@ def users_post(user):
 def comments(post,user):
     comment = Post_comment.query.order_by(desc(Post_comment.post_comment_date)).filter(Post_comment.post_comment_by==user).all()
     return comment
-
-def users_notification(user):
-    newmsg = Notification.query.filter(Notification.notification_to == user,Notification.notification_status == True).all()
-    return newmsg
-
-def User_user():
-    try:
-        id = str(uuid.uuid4())
-        name = request.form.get("name")
-        username = request.form.get("username")
-        dp_addr_file = request.files.get("dp_addr_file")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        payload = {'password': password}
-        token = jwt.encode(payload, 'vrushabh@2611', algorithm='HS256')
-        new_passwrod = token
-
-        filename = None
-        if dp_addr_file:
-            filename = secure_filename(dp_addr_file.filename)
-            dp_addr_file.save(os.path.join('E:\\vrushabh\python_project\static',filename))
-
-        add_user = User(id=id,name=name,username=username,dp_addr=filename,email=email,password = new_passwrod)
-        db.session.add(add_user)
-        db.session.commit()
-        return add_user
-
-    except Exception as e:
-        print(e)
-
-def authenticate():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    user = User.query.filter_by(username=username).first()
-    if user:
-        try:
-            token = user.password
-            new_password = jwt.decode(
-                token, 'vrushabh@2611', algorithms='HS256')
-            if user and new_password['password'] == password:
-                return user
-        except jwt.DecodeError:
-            pass
-    return None
 
 def newpost(user):
     post_id = str(uuid.uuid4())
@@ -93,22 +44,6 @@ def newpost(user):
         img_filename = None
     return redirect(url_for('user_api.home', tenant=user.name))
 
-
-def Searchresult(session,user,search):
-    all_users =all_user()
-    search_used = session.execute(text(f'SELECT * FROM "myschema"."User" WHERE LOWER(name) LIKE :values'),
-            {"values": f"%{search.lower()}%"}).fetchall()
-    return render_template('user/search.html',all_users=all_users,search_result=search_used,tenant=user)
-
-def add_notification(user,tenant):
-    new_notificaitions = Notification(
-        notification_id = str(uuid.uuid4()),
-        notification_details = f"{user} Send You Follow Request.Do You Want To Follow Them ?",
-        notification_to = tenant,
-        notification_from = user
-    )   
-    db.session.add(new_notificaitions)
-    db.session.commit()
 
 
 def like_current_post(post_id,user):

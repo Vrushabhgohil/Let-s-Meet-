@@ -3,17 +3,14 @@ from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from common.database import db, switch_tenant
-from common.model import Post, Post_like, User
-from tenants.user.service import Searchresult, all_post, all_user, authenticate, User_user, comment_current_post, comments, delete_current_post, dislike_current_post, like_current_post, newpost, remove_commnet_current_post, users_post
-
+from common.model import Post_like, User
+from tenants.user.service import Searchresult, add_notification, all_post, all_user, authenticate, User_user, comments
+from tenants.user.service import users_notification, users_post
 
 user_api = Blueprint('user_api', __name__,
                      template_folder='templates', static_folder='static')
-engine = create_engine(
-    'postgresql://postgres:postgres@localhost:5432/postgres')
+engine = create_engine('postgresql://postgres:postgres@localhost:5432/postgres')
 Session = sessionmaker(bind=engine)
-session = Session()
-
 session = Session()
 
 @user_api.route('/signup', methods=['GET', 'POST'])
@@ -83,45 +80,18 @@ def search_user(tenant):
     return render_template('user/search.html', all_users=users, tenant=cuser)
 
 
-
-
-@user_api.route('/post_image/<string:tenant>', methods=['GET', 'POST'])
+@user_api.route('/follow/<string:tenant>')
 @login_required
-@switch_tenant
-def post_image(tenant):
-    user = current_user
-    newpost(user)
-    return render_template('user/add_post.html', user=user, schema = tenant)
+def follow(tenant):
+    user = current_user.name
+    send_notification = add_notification(user,tenant)
+    return redirect(url_for('user_api.profile', tenant=tenant))
 
-@user_api.route('/delete_post/<string:post_id>', methods=['POST'])
-def delete_post(post_id):
-    user = current_user
-    delete_current_post(post_id,user)
-    return redirect(url_for('user_api.home', tenant=user.name))
-
-@user_api.route('/like_post/<string:post_id>', methods=['POST'])
-def like_post(post_id):
-    user = current_user
-    like_current_post(post_id,user.id)
-    return redirect(url_for('user_api.home', tenant=user.name))
-
-@user_api.route('/add_comment/<string:post_id>', methods=['POST'])
-def add_comment(post_id):
-    user = current_user
-    comment_current_post(post_id,user.id)
-    return redirect(url_for('user_api.home', tenant=user.name))
-
-@user_api.route('/delete__comment/<string:post_id>', methods=['POST'])
-def delete__comment(post_id):
-    user = current_user
-    remove_commnet_current_post(post_id,user.id)
-    return redirect(url_for('user_api.home', tenant=user.name))
-
-@user_api.route('/dislike_post/<string:post_id>', methods=['POST'])
-def dislike_post(post_id):
-    user = current_user
-    dislike_current_post(post_id,user.id)
-    return redirect(url_for('user_api.home', tenant=user.name))
+@user_api.route('/notifications/<string:tenant>',methods=['GET','POST'])
+def notifications(tenant):
+    user = current_user.name
+    newnote = users_notification(user)
+    return render_template('user/notification.html',tenant=user,newnote=newnote)
 
 @user_api.route('/logout')
 @login_required

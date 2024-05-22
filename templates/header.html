@@ -24,10 +24,13 @@
         </div>
         <div class="menu_Section">
             <div>
+                <a href="{{url_for('user_api.notifications',tenant=tenant)}}"><i class="fa-solid fa-bell" style="color: #000000;"></i></a>
+            </div>
+            <div>
                 <a href="{{url_for('user_api.search_user',tenant=tenant)}}"><i class="fa-solid fa-magnifying-glass" style="color: #000000;"></i></a>
             </div>
             <div>
-                <a href="{{url_for('user_api.post_image',tenant=tenant)}}"><i class="fa-regular fa-square-plus" style="color: #000000;"></i></a>
+                <a href="{{url_for('post_api.post_image',tenant=tenant)}}"><i class="fa-regular fa-square-plus" style="color: #000000;"></i></a>
             </div>
             <div>
                 <a href="{{url_for('user_api.profile',tenant=tenant)}}"><i class="fa-regular  fa-user" style="color: #000000;"></i></a>

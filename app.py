@@ -5,6 +5,7 @@ from common.database import db
 from common.model import User
 from tenants.admin.api import admin_api 
 from tenants.user.api import user_api 
+from tenants.post.api import post_api 
 
 def create_app():
     app=Flask(__name__)
@@ -17,6 +18,7 @@ def create_app():
         db.create_all()
     app.register_blueprint(user_api)
     app.register_blueprint(admin_api)
+    app.register_blueprint(post_api)
     return app
 
 
