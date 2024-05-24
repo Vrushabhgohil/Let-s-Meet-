@@ -1,11 +1,12 @@
-from flask import Blueprint, g, redirect, render_template, request, url_for
+from flask import Blueprint, g, redirect, render_template, request, url_for,flash
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from common.database import db, switch_tenant
 from common.model import Post_like, User
-from tenants.user.service import Searchresult, add_notification, all_post, all_user, authenticate, User_user, comments
-from tenants.user.service import users_notification, users_post
+from tenants.post.service import all_post,  users_post
+from tenants.user.service import Searchresult, Update_user_details, add_notification, all_user, authenticate, signup_user
+from tenants.user.service import users_notification
 
 user_api = Blueprint('user_api', __name__,
                      template_folder='templates', static_folder='static')
@@ -17,7 +18,7 @@ session = Session()
 def signup():
     if request.method == 'POST':
         try:
-            user = User_user()
+            user = signup_user()
             if user:
                 schema = g.tenant = user.name
                 db.choose_tenant(schema)
@@ -25,7 +26,6 @@ def signup():
         except Exception as e:
             print(e)
     return redirect(url_for('user_api.login'))
-
 
 @user_api.route('/login', methods=['GET', 'POST'])
 def login():
@@ -39,7 +39,6 @@ def login():
         else:
             msg = 'Invalid Username or Password'
             return render_template('login.html', msg=msg)
-
     return render_template('login.html')
 
 @user_api.route('/home/<string:tenant>')
@@ -48,14 +47,13 @@ def login():
 def home(tenant):
     tenant = current_user.name
     user = all_user()
-    display_posts = all_post()
+    display_posts = all_post() 
     like_status={}
     for i in display_posts:
         like_unlike_posts = Post_like.query.filter_by(post_id=i.post_id,post_like_by=current_user.id).first()
         like_status[i.post_id] = like_unlike_posts is not None
-
-        post_comments = comments(i.post_id,current_user.id)
-    return render_template('user/home.html',tenant=tenant,user=user,display_posts=display_posts,like_status=like_status,post_comments=post_comments)
+        # post_comments = comments(i.post_id,current_user.id)
+    return render_template('user/home.html',tenant=tenant,user=user,display_posts=display_posts,like_status=like_status)
 
 @user_api.route('/profile/<string:tenant>')
 @login_required
@@ -72,26 +70,36 @@ def profile(tenant):
 @switch_tenant
 def search_user(tenant):
     cuser= current_user.name
-    users = all_user()
+    users = User.query.filter(User.name != current_user.name).all()
     search = request.form.get('search')
     if search:
         result = Searchresult(session,cuser,search)
         return result
     return render_template('user/search.html', all_users=users, tenant=cuser)
 
-
 @user_api.route('/follow/<string:tenant>')
 @login_required
 def follow(tenant):
     user = current_user.name
-    send_notification = add_notification(user,tenant)
+    add_notification(user,tenant)
     return redirect(url_for('user_api.profile', tenant=tenant))
 
 @user_api.route('/notifications/<string:tenant>',methods=['GET','POST'])
+@login_required
 def notifications(tenant):
     user = current_user.name
     newnote = users_notification(user)
     return render_template('user/notification.html',tenant=user,newnote=newnote)
+
+@user_api.route('/editprofile/<string:tenant>',methods=['GET','POST'])
+@login_required
+def editprofile(tenant):
+    one_user = User.query.filter(User.name==tenant).first()
+    if request.method == 'POST':
+        Update_user_details(one_user)
+        return redirect(url_for('user_api.home',tenant =current_user.name))
+    return render_template('user/edit_profile.html',one_user=one_user)
+    
 
 @user_api.route('/logout')
 @login_required

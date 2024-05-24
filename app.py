@@ -30,8 +30,6 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
-
-# functions
 def add_photo(file):
     photos_path = os.path.join(os.getcwd(), 'static', 'photos')
     UPLOAD_FOLDER = photos_path
@@ -39,8 +37,6 @@ def add_photo(file):
     filename = file.filename
     file.save(os.path.join(folder, filename))
 
-
-# apis 
 @app.before_request
 def before_request():
     tenant = request.headers.get('tenant')
