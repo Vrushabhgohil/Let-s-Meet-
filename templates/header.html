@@ -15,34 +15,35 @@
 </head>
 
 <body class="container">
-    <div class="header_section">
+    <header class="header_section d-flex align-items-center justify-content-between py-3">
         <div class="logo">
             <a href="{{url_for('user_api.home',tenant = tenant)}}">
                 <img src="https://storage.googleapis.com/msgsndr/BJ4wCCX92mMEkG1NlMJn/media/62bf87adefdca3a07081fdb0.jpeg"
-                    alt="" srcset="">
+                    alt="Logo" class="img-fluid">
             </a>
         </div>
-        <div class="menu_Section">
-            <div>
-                <a href="{{url_for('user_api.notifications',tenant=tenant)}}"><i class="fa-solid fa-bell" style="color: #000000;"></i></a>
-            </div>
-            <div>
-                <a href="{{url_for('user_api.search_user',tenant=tenant)}}"><i class="fa-solid fa-magnifying-glass" style="color: #000000;"></i></a>
-            </div>
-            <div>
-                <a href="{{url_for('post_api.post_image',tenant=tenant)}}"><i class="fa-regular fa-square-plus" style="color: #000000;"></i></a>
-            </div>
-            <div>
-                <a href="{{url_for('user_api.profile',tenant=tenant)}}"><i class="fa-regular  fa-user" style="color: #000000;"></i></a>
-            </div>
-            <div>
-                <a href="{{url_for('user_api.logout')}}"><i class="fa-solid fa-power-off" style="color: #000000;"></i> </a>
-            </div>
-        </div>
-    </div>
-    {% block body %} {% endblock %}
-    <div class="footer_section"></div>
+        <nav class="menu_Section d-flex gap-4">
+            <a href="{{url_for('user_api.notifications',tenant=tenant)}}" class="text-dark">
+                <i class="fa-solid fa-bell"></i>
+            </a>
+            <a href="{{url_for('user_api.search_user',tenant=tenant)}}" class="text-dark">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
+            <a href="{{url_for('post_api.post_image',tenant=tenant)}}" class="text-dark">
+                <i class="fa-regular fa-square-plus"></i>
+            </a>
+            <a href="{{url_for('user_api.profile',tenant=tenant)}}" class="text-dark">
+                <i class="fa-regular fa-user"></i>
+            </a>
+            <a href="{{url_for('user_api.logout')}}" class="text-dark">
+                <i class="fa-solid fa-power-off"></i>
+            </a>
+        </nav>
+    </header>
 
+    {% block body %} {% endblock %}
+
+    <footer class="footer_section"></footer>
 </body>
 
 </html>

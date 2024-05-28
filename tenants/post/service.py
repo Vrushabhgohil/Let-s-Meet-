@@ -12,9 +12,22 @@ def all_post():
     return posts
 
 def users_post(user):
-    posts = Post.query.order_by(desc(Post.created_at)).filter(Post.post_by==user).all()
+    posts = Post.query.order_by(desc(Post.created_at)).filter(Post.post_by==user,Post.post_status==True).all()
     return posts
 
+def permenent_delete():
+    false_posts = Post.query.filter(Post.post_status == False).first()
+    if false_posts:
+        false_posts_like = Post_like.query.filter(Post_like.post_id == false_posts.post_id).all()
+        current_time = datetime.now()
+        time_diff = current_time - false_posts.updated_at
+    
+        if time_diff.total_seconds() > 86400: 
+            for false_posts_likes in false_posts_like:
+                db.session.delete(false_posts_likes) # delete all the post which is saved as archive from last one day
+            db.session.delete(false_posts)
+
+        db.session.commit()
 
 # ADD NEW POST
 
@@ -52,7 +65,8 @@ def common_notification(user,muser):
         'notification_id' : str(uuid.uuid4()),
         'notification_to' : muser,
         'notification_from' : user,
-        'notification_date' : datetime.now()
+        'notification_date' : datetime.now(),
+        'change_at' : None
     }
 
     return common_data
@@ -104,13 +118,9 @@ def dislike_current_post(post_id,user):
 def delete_current_post(post_id,user):
     fnd_post = Post.query.get(post_id)
     if fnd_post:
-        delete_like = Post_like.query.filter(Post_like.post_id==post_id).first()
-        if delete_like:
-            db.session.delete(delete_like)      
-            db.session.commit() 
-                
-        db.session.delete(fnd_post)
-        user.post -=1
+        fnd_post.post_status = False
+        fnd_post.updated_at = datetime.now()
+        user.post -= 1
         db.session.commit() 
 
 def archivepost(post_id):

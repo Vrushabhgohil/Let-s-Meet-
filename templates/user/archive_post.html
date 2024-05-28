@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{url_for('static',filename='post.css')}}" />
+  <link rel="stylesheet" href="{{url_for('static',filename='home.css')}}" />
+
+  <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <style>
+    #image-preview {
+      max-width: 300px;
+      max-height: 300px;
+      margin-top: 20px;
+    }
+  </style>
+  <title>Profile</title>
+</head>
+{% extends "header.html"%}{% block body %}
+ 
+<body>
+  
+  <div class="meet_you_details">
+
+    {% if user.dp_addr %}
+    <img src="{{url_for('static',filename=user.dp_addr)}}" alt="" srcset="">
+    {% endif %}
+    <br>
+    <h4>{{user.name}}</h4><br>
+    <div class="details_imp">
+      <h4>Archive Posts</h4>
+    </div>
+    <br>
+    
+
+    <!-- all the post of the current user -->
+    
+  </div>
+  <div class="post_img">
+    {% for i in display_your_post%}
+      {% if i.post_status == False %}
+      <img src="{{url_for('static',filename = i.post_addr)}}" alt="" srcset="">
+      {% endif %}
+    {% endfor %}
+</div>
+</body>
+{% endblock%}
+
+</html>

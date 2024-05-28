@@ -54,6 +54,10 @@
         <form action="{{url_for('user_api.editprofile',tenant=user.name)}}">
           <button class="submit text-bg-primary border-0 m-3" style="width: 150px;"> Edit</button></form>
       </div>
+      <div  class="col-3">
+        <form action="{{url_for('post_api.archive_posts',tenant=user.name)}}">
+          <button class="submit text-bg-danger border-0 m-3" style="width: 150px;">Archive</button></form>
+      </div>
       {% else %}
       <div  class="col-3">
         <form action="{{url_for('user_api.follow',tenant=user.name)}}">

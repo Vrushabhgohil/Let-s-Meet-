@@ -13,11 +13,13 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-
+{% extends "header.html" %}{% block body %}
 <body class="container">
     <div class="row notification-container">
-        <h2 class="text-center">My Notifications</h2>
-        <p class="dismiss text-right m-5"><a id="dismiss-all" href="#">Dimiss All</a></p>
+        <h2 class="text-center mt-5">My Notifications</h2>
+        <form action="{{url_for('user_api.dismissallnote')}}">
+            <button class="border border-none" style="margin: 10px 0;background: transparent;">Dismiss All</button>
+        </form>
         <div class="card notification-card notification-invitation">
             <div class="card-body">
                 {% for i in newnote %}
@@ -27,8 +29,20 @@
                             <div class="card-title">{{i.notification_from}} <br> {{i.notification_details}}</div>
                         </td>
                         <td style="width:30%">
-                            <a href="#" class="btn btn-primary">Accept</a>
-                            <a href="#" class="btn btn-danger dismiss-notification">Dismiss</a>
+                        <td>
+
+                            <form action="">
+                                <a href="#" class="btn btn-primary">Accept</a>
+                            </form>
+                        </td>
+                        <td>
+
+                            <form action="{{url_for('user_api.dismissnote',notification_id = i.notification_id)}}">
+                                <button class="btn btn-danger ">
+                                    Dismiss
+                                </button>
+                            </form>
+                        </td>
                         </td>
                     </tr>
                 </table>
@@ -38,32 +52,7 @@
 
     </div>
 
-    <script>
-        const dismissAll = document.getElementById('dismiss-all');
-        const dismissBtns = Array.from(document.querySelectorAll('.dismiss-notification'));
-
-        const notificationCards = document.querySelectorAll('.notification-card');
-
-        dismissBtns.forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault;
-                var parent = e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
-                parent.classList.add('display-none');
-            })
-        });
-
-        dismissAll.addEventListener('click', function (e) {
-            e.preventDefault;
-            notificationCards.forEach(card => {
-                card.classList.add('display-none');
-            });
-            const row = document.querySelector('.notification-container');
-            const message = document.createElement('h4');
-            message.classList.add('text-center');
-            message.innerHTML = 'All caught up!';
-            row.appendChild(message);
-        })
-    </script>
+   
 </body>
-
+{% endblock %}
 </html>

@@ -4,8 +4,9 @@ from flask_login import current_user, login_required
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from common.database import switch_tenant
-from common.model import Post
-from tenants.post.service import archivepost, comment_current_post
+from common.model import Post, User
+from sqlalchemy import desc
+from tenants.post.service import comment_current_post, users_post
 from tenants.post.service import delete_current_post, dislike_current_post, like_current_post, newpost, remove_commnet_current_post
 from common.database import db
 
@@ -38,11 +39,16 @@ def edit_post(post_id):
         return redirect(url_for('user_api.home',tenant =current_user.name))
     return render_template('user/edit_post.html',one_post=one_post)
 
-@post_api.route('/archive_post/<string:post_id>', methods=['POST'])
-def archive_post(post_id):
-    user = current_user 
-    archivepost(post_id)
-    return redirect(url_for('user_api.home', tenant=user.name))
+@post_api.route('/archive_posts/<string:tenant>')
+@login_required
+@switch_tenant      
+def archive_posts(tenant):
+    schema = current_user.name
+    post_data = User.query.filter(User.name == tenant).first()
+    display_your_post = Post.query.order_by(desc(Post.created_at)).filter(Post.post_by==current_user.id,Post.post_status==False).all()
+    return render_template('user/archive_post.html', user=post_data, tenant=schema, display_your_post=display_your_post)
+
+
 
 @post_api.route('/delete_post/<string:post_id>', methods=['POST'])
 def delete_post(post_id):

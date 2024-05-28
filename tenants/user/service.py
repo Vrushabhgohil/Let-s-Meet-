@@ -8,7 +8,6 @@ import jwt
 from common.database import db
 from common.model import Notification, User
 from sqlalchemy import text
-
 from tenants.post.service import common_notification
 
 def all_user():
@@ -18,6 +17,21 @@ def all_user():
 def users_notification(user):
     newmsg = Notification.query.filter(Notification.notification_to == user,Notification.notification_status == True).all()
     return newmsg
+    x
+def dismiss_a_note(notification_id):
+    fnd_note = Notification.query.filter(Notification.notification_id == notification_id).first()
+    fnd_note.notification_status = False
+    fnd_note.change_at = datetime.now()
+    db.session.commit()
+
+def dismiss_all_note():
+    newmsg = Notification.query.filter(Notification.notification_to == current_user.name,Notification.notification_status == True).all()
+    for i in newmsg:
+        i.notification_status = False
+        i.change_at = datetime.now()
+        db.session.commit()
+    return render_template('user/notification.html',tenant=current_user.name)
+
 
 def signup_user():
     try:

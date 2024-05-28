@@ -94,4 +94,5 @@ class Notification(db.Model):
     notification_to = Column(String(50),nullable=False)
     notification_from = Column(String(50),nullable=False)
     notification_date = Column(DateTime, nullable=False)
+    change_at = Column(DateTime, default=None)
     notification_status = Column(Boolean,default=True)
