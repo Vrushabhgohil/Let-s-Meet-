@@ -6,12 +6,12 @@ from sqlalchemy.orm import sessionmaker
 from common.database import switch_tenant
 from common.model import Post, User
 from sqlalchemy import desc
-from tenants.post.service import comment_current_post, users_post
+from tenants.post.service import comment_current_post   
 from tenants.post.service import delete_current_post, dislike_current_post, like_current_post, newpost, remove_commnet_current_post
 from common.database import db
 
 post_api = Blueprint('post_api', __name__,template_folder='templates', static_folder='static')
-engine = create_engine('postgresql://postgres:postgres@localhost:5432/postgres')
+engine = create_engine('database_uri')
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -47,8 +47,6 @@ def archive_posts(tenant):
     post_data = User.query.filter(User.name == tenant).first()
     display_your_post = Post.query.order_by(desc(Post.created_at)).filter(Post.post_by==current_user.id,Post.post_status==False).all()
     return render_template('user/archive_post.html', user=post_data, tenant=schema, display_your_post=display_your_post)
-
-
 
 @post_api.route('/delete_post/<string:post_id>', methods=['POST'])
 def delete_post(post_id):

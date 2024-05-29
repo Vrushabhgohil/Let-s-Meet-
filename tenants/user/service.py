@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import uuid
 from flask_login import current_user
+from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 from flask import render_template, request
 import jwt
@@ -15,9 +16,9 @@ def all_user():
     return users
 
 def users_notification(user):
-    newmsg = Notification.query.filter(Notification.notification_to == user,Notification.notification_status == True).all()
+    newmsg = Notification.query.order_by(desc(Notification.notification_date)).filter(Notification.notification_to == user,Notification.notification_status == True).all()
     return newmsg
-    x
+
 def dismiss_a_note(notification_id):
     fnd_note = Notification.query.filter(Notification.notification_id == notification_id).first()
     fnd_note.notification_status = False
@@ -103,6 +104,7 @@ def add_notification(user,tenant):
     note_details = f"{user} Request to Follow You, Do You Want To Follow Them ?",
     note_on = f"User Follow",
     common_data = common_notification(user,tenant)
-    new_notification = Notification(notification_details=note_details,notification_on=note_on,**common_data)
-    db.session.add(new_notification)
-    db.session.commit()
+    if common_data.notification_to != common_data.notification_from:    
+        new_notification = Notification(notification_details=note_details,notification_on=note_on,**common_data)
+        db.session.add(new_notification)
+        db.session.commit()

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,14 +28,13 @@
                             <div class="card-title">{{i.notification_from}} <br> {{i.notification_details}}</div>
                         </td>
                         <td style="width:30%">
+                                {{i.notification_date.date()}}
                         <td>
-
                             <form action="">
                                 <a href="#" class="btn btn-primary">Accept</a>
                             </form>
                         </td>
                         <td>
-
                             <form action="{{url_for('user_api.dismissnote',notification_id = i.notification_id)}}">
                                 <button class="btn btn-danger ">
                                     Dismiss
@@ -49,10 +47,7 @@
                 {% endfor %}
             </div>
         </div>
-
     </div>
-
-   
 </body>
 {% endblock %}
 </html>

@@ -68,7 +68,7 @@ def common_notification(user,muser):
         'notification_date' : datetime.now(),
         'change_at' : None
     }
-
+    
     return common_data
 
 def mention_notification(user,muser,post_id):

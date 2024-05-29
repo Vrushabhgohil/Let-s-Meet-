@@ -13,7 +13,7 @@ from tenants.user.service import (
 user_api = Blueprint('user_api', __name__,
                      template_folder='templates', static_folder='static')
 engine = create_engine(
-    'postgresql://postgres:postgres@localhost:5432/postgres')
+    'database_uri')
 Session = sessionmaker(bind=engine)
 session = Session()
 
